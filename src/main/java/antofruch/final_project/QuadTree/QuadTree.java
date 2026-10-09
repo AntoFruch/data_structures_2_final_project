@@ -94,26 +94,27 @@ public class QuadTree<T extends Positionable> {
             throw new IllegalArgumentException("Element is outside the quadtree boundaries");
 
         Node<T> cur = root;
-        while (cur.subdivided){
-            cur = cur.children[cur.calculateQuadrant(element)];
-        }
+        while (true) {
+            if (cur.subdivided) {
+                // node is subdivided, we go down in the right quadrant
+                cur = cur.children[cur.calculateQuadrant(element)];
+            } else {
+                // The node is a leaf
+                if (cur.data == null) {
+                    // The leaf is empty, we place the element there
+                    cur.data = element;
+                    return true;
+                }
 
-        // if the current node is empty, we can insert the element here
-        if (cur.data == null){
-            cur.data = element;
-            return true;
-        }
+                // The node already contains an element, we check the maximum depth before subdividing.
+                if (cur.subdivision_depth >= MAX_SUBDIVISION_DEPTH) {
+                    // FIXME: linked list when max subdivision is reached
+                    throw new UnsupportedOperationException("Maximum subdivision depth reached, unable to insert element");
+                }
 
-        // if not we have to subdivide until we can
-        while (cur.data != null){
-            if (cur.subdivision_depth >= MAX_SUBDIVISION_DEPTH)
-                throw new UnsupportedOperationException("Maximum subdivision depth reached, unable to insert element");
-            System.out.println("subdivision done");
-            cur.subdivide();
-            cur = cur.children[cur.calculateQuadrant(element)];
+                // we subdivide the node
+                cur.subdivide();
+            }
         }
-        cur.data = element;
-
-        return true;
     }
 }
