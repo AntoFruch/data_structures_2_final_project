@@ -1,0 +1,41 @@
+/* Arrière-plan de la fenêtre */
+.main-container {
+    -fx-background-color: #f8fafc;
+}
+
+/* Titre principal */
+.title-text {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0f172a;
+}
+
+/* Sous-titres et texte d'accueil */
+.subtitle-text {
+    -fx-font-size: 14px;
+    -fx-text-fill: #64748b;
+}
+
+/* Style du bouton principal */
+.primary-button {
+    -fx-background-color: #2563eb;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8px;
+    -fx-padding: 10px 24px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(37, 99, 235, 0.25), 8, 0, 0, 4);
+}
+
+/* Effet au survol du bouton */
+.primary-button:hover {
+    -fx-background-color: #1d4ed8;
+    -fx-effect: dropshadow(three-pass-box, rgba(29, 78, 216, 0.35), 10, 0, 0, 6);
+}
+
+/* Effet au clic */
+.primary-button:pressed {
+    -fx-background-color: #1e40af;
+    -fx-effect: none;
+}

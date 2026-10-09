@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="CENTER" spacing="16.0"
+      stylesheets="@style.css" styleClass="main-container"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="antofruch.final_project.HelloController">
+
+    <padding>
+        <Insets bottom="32.0" left="32.0" right="32.0" top="32.0"/>
+    </padding>
+
+    <!-- Titre principal -->
+    <Label text="Bienvenue" styleClass="title-text"/>
+
+    <!-- Soustitre / Message dynamique -->
+    <Label fx:id="welcomeText" text="Cliquez sur le bouton ci-dessous pour démarrer." styleClass="subtitle-text"/>
+
+    <!-- Bouton interactif -->
+    <Button fx:id="actionButton" text="Commencer" onAction="#onHelloButtonClick" styleClass="primary-button"/>
+
+</VBox>
