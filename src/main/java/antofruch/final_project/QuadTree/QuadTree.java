@@ -1,12 +1,10 @@
 package antofruch.final_project.QuadTree;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class QuadTree<T extends Positionable> {
 
-    private final int MAX_SUBDIVISION_DEPTH;
+    private final int maxSubdivisionDepth;
     static class Node<T extends Positionable> {
         /** stored data */
         private T data;
@@ -18,7 +16,7 @@ public class QuadTree<T extends Positionable> {
         private boolean subdivided = false;
 
         /** depth of the node in the tree */
-        private final int subdivision_depth;
+        private final int subdivisionDepth;
 
         /** north-west child node */
         private Node<T>[] children;
@@ -26,7 +24,7 @@ public class QuadTree<T extends Positionable> {
 
         public Node(final double x, final double y, final double width, final double height, final int subdivision_depth){
             this.boundary = new AABB(x, y, width, height);
-            this.subdivision_depth = subdivision_depth;
+            this.subdivisionDepth = subdivision_depth;
         }
 
         public boolean contains(T element) {
@@ -39,10 +37,10 @@ public class QuadTree<T extends Positionable> {
         public void subdivide(){
             // creation of child nodes
             children = new Node[4];
-            children[0] = new Node<>(boundary.x, boundary.y, boundary.width / 2, boundary.height / 2, subdivision_depth+1);
-            children[1] = new Node<>(boundary.x + boundary.width / 2, boundary.y, boundary.width / 2, boundary.height / 2, subdivision_depth+1);
-            children[2] = new Node<>(boundary.x, boundary.y + boundary.height / 2, boundary.width / 2, boundary.height / 2, subdivision_depth+1);
-            children[3] = new Node<>(boundary.x + boundary.width / 2, boundary.y + boundary.height / 2, boundary.width / 2, boundary.height / 2, subdivision_depth+1);
+            children[0] = new Node<>(boundary.x, boundary.y, boundary.width / 2, boundary.height / 2, subdivisionDepth +1);
+            children[1] = new Node<>(boundary.x + boundary.width / 2, boundary.y, boundary.width / 2, boundary.height / 2, subdivisionDepth +1);
+            children[2] = new Node<>(boundary.x, boundary.y + boundary.height / 2, boundary.width / 2, boundary.height / 2, subdivisionDepth +1);
+            children[3] = new Node<>(boundary.x + boundary.width / 2, boundary.y + boundary.height / 2, boundary.width / 2, boundary.height / 2, subdivisionDepth +1);
 
             // move the data in adequate child
             children[calculateQuadrant(data)].data = data;
@@ -67,25 +65,32 @@ public class QuadTree<T extends Positionable> {
     public QuadTree(final double initial_width, final double initial_height, final int max_subdivision_depth){
         // FIXME: At the moment we assume the data coordinates will be positive
         root = new Node<>(0, 0, initial_width, initial_height, 0);
-        MAX_SUBDIVISION_DEPTH = max_subdivision_depth;
+        maxSubdivisionDepth = max_subdivision_depth;
     }
 
-    public T find(final T element){
-        // if the element is not in the quadtree boundaries, we throw an exception
-        if (!root.contains(element))
-            throw new IllegalArgumentException("Element is outside the quadtree boundaries");
+    public List<T> find(final double x, final double y, final double width, final double height ){
+        AABB region = new AABB(x, y, width, height);
+        if (region.intersects(root.boundary))
+            throw new IllegalArgumentException("Query rectangle is outside the quadtree boundaries");
 
-        // else we search for the element
-        Node<T> cur = root;
-        while (cur.subdivided){
-            cur = cur.children[cur.calculateQuadrant(element)];
+        List<T> results = new ArrayList<>();
+        Queue<Node<T>> queue = new ArrayDeque<>();
+        queue.add(root);
+        while (!queue.isEmpty()){
+            Node<T> cur = queue.poll();
+            if (cur.boundary.intersects(region)) {
+                continue;
+            }
+
+            if (cur.data != null && region.contains(cur.data.getX(), cur.data.getY())){
+                results.add(cur.data);
+            }
+
+            if (cur.subdivided) {
+                queue.addAll(Arrays.asList(cur.children));
+            }
         }
-
-        // in the final box, either the box is empty, return null, either data is here so we return it
-        if (cur.data != null)
-            return cur.data;
-
-        return null;
+        return results;
     }
 
     public boolean insert(final T element){
@@ -107,7 +112,7 @@ public class QuadTree<T extends Positionable> {
                 }
 
                 // The node already contains an element, we check the maximum depth before subdividing.
-                if (cur.subdivision_depth >= MAX_SUBDIVISION_DEPTH) {
+                if (cur.subdivisionDepth >= maxSubdivisionDepth) {
                     // FIXME: linked list when max subdivision is reached
                     throw new UnsupportedOperationException("Maximum subdivision depth reached, unable to insert element");
                 }

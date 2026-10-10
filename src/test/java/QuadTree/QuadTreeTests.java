@@ -2,9 +2,12 @@ package QuadTree;
 
 import antofruch.final_project.QuadTree.*;
 import org.junit.jupiter.api.*;
+
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-public class QuadTreeTests {
+class QuadTreeTests {
 
     static class TestItem implements Positionable {
         private final double x;
@@ -36,7 +39,7 @@ public class QuadTreeTests {
 
     @BeforeEach
     void setUp() {
-        quadTree = new QuadTree<>(100, 100, 4);
+        quadTree = new QuadTree<>(100, 100, 6);
     }
 
     @Test
@@ -54,6 +57,30 @@ public class QuadTreeTests {
         TestItem outItem = new TestItem(150, 150, "OutOfBounds");
 
         assertThrows(IllegalArgumentException.class, () -> quadTree.insert(outItem), "The item outside the boundary should be rejected.");
+    }
+
+    @Test
+    @DisplayName("Should find an item within a query region")
+    void testFindItem() {
+        TestItem item = new TestItem(25, 25, "A");
+        quadTree.insert(item);
+
+        List<TestItem> found = quadTree.find(20, 20, 10, 10);
+
+        assertFalse(found.isEmpty(), "The item should be found within the query region.");
+    }
+
+    @Test
+    @DisplayName("Should find multiple items within a query region")
+    void testFindMultipleItems() {
+        TestItem item1 = new TestItem(25, 25, "A");
+        TestItem item2 = new TestItem(30, 30, "B");
+        quadTree.insert(item1);
+        quadTree.insert(item2);
+
+        List<TestItem> found = quadTree.find(20, 20, 10, 10);
+
+        assertEquals(2, found.size(), "Both items should be found within the query region.");
     }
 }
 
