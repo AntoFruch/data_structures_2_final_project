@@ -73,7 +73,7 @@ class QuadTreeTests {
         TestItem item = new TestItem(25, 25, "A");
         quadTree.insert(item);
 
-        List<TestItem> found = quadTree.find(20, 20, 10, 10);
+        List<TestItem> found = quadTree.find(20, 20, 30, 30);
 
         assertFalse(found.isEmpty(), "The item should be found within the query region.");
     }
@@ -86,7 +86,7 @@ class QuadTreeTests {
         quadTree.insert(item1);
         quadTree.insert(item2);
 
-        List<TestItem> found = quadTree.find(20, 20, 10, 10);
+        List<TestItem> found = quadTree.find(20, 20, 31, 31);
 
         assertEquals(2, found.size(), "Both items should be found within the query region.");
     }

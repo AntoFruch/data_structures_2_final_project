@@ -1,7 +1,9 @@
 package antofruch.final_project.MultiDimTrees.QuadTree;
 
+import antofruch.final_project.MultiDimTrees.KDAABB;
 import antofruch.final_project.MultiDimTrees.Positionable;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -16,7 +18,7 @@ public class QuadTree<T extends Positionable> {
         private T data;
 
         /** boundary of the node */
-        private final AABB boundary;
+        private final KDAABB boundary;
 
         /** true: the node is subdivided into 4 other nodes */
         private boolean subdivided = false;
@@ -29,12 +31,12 @@ public class QuadTree<T extends Positionable> {
 
 
         public Node(final double x, final double y, final double width, final double height, final int subdivision_depth){
-            this.boundary = new AABB(x, y, width, height);
+            this.boundary = new KDAABB(Arrays.asList(x, y), Arrays.asList(x + width, y + height));
             this.subdivisionDepth = subdivision_depth;
         }
 
-        public boolean contains(T element) {
-            return boundary.contains(element.getCoordinate(0), element.getCoordinate(1));
+        public boolean contains(Positionable element) {
+            return boundary.contains(element);
         }
 
         /**
@@ -43,10 +45,15 @@ public class QuadTree<T extends Positionable> {
         public void subdivide(){
             // creation of child nodes
             children = new Node[4];
-            children[0] = new Node<>(boundary.x, boundary.y, boundary.width / 2, boundary.height / 2, subdivisionDepth +1);
-            children[1] = new Node<>(boundary.x + boundary.width / 2, boundary.y, boundary.width / 2, boundary.height / 2, subdivisionDepth +1);
-            children[2] = new Node<>(boundary.x, boundary.y + boundary.height / 2, boundary.width / 2, boundary.height / 2, subdivisionDepth +1);
-            children[3] = new Node<>(boundary.x + boundary.width / 2, boundary.y + boundary.height / 2, boundary.width / 2, boundary.height / 2, subdivisionDepth +1);
+            double halfW = boundary.getWidth(0) / 2;
+            double halfH = boundary.getWidth(1) / 2;
+            double minX  = boundary.getMin().get(0);
+            double minY  = boundary.getMin().get(1);
+
+            children[0] = new Node<>(minX, minY, halfW, halfH, subdivisionDepth + 1);
+            children[1] = new Node<>(minX + halfW, minY, halfW, halfH, subdivisionDepth + 1);
+            children[2] = new Node<>(minX, minY + halfH, halfW, halfH, subdivisionDepth + 1);
+            children[3] = new Node<>(minX + halfW, minY + halfH, halfW, halfH, subdivisionDepth + 1);
 
             // move the data in adequate child
             children[calculateQuadrant(data)].data = data;
@@ -58,8 +65,8 @@ public class QuadTree<T extends Positionable> {
 
         private int calculateQuadrant(T element){
             // each condition on x and y turn a bit to 0 or 1 making the final index (0b00, 0b01, 0b10, 0b11)
-            int bitX = (element.getCoordinate(0) >= boundary.x + boundary.width / 2) ? 1 : 0;
-            int bitY = (element.getCoordinate(1) >= boundary.y + boundary.height / 2) ? 1 : 0;
+            int bitX = (element.getCoordinate(0) >= boundary.getMin().get(0) + boundary.getWidth(0) / 2) ? 1 : 0;
+            int bitY = (element.getCoordinate(1) >= boundary.getMin().get(1) + boundary.getWidth(1) / 2) ? 1 : 0;
             return bitX | (bitY << 1);
         }
 
@@ -74,9 +81,9 @@ public class QuadTree<T extends Positionable> {
         maxSubdivisionDepth = max_subdivision_depth;
     }
 
-    public List<T> find(final double x, final double y, final double width, final double height ){
-        AABB region = new AABB(x, y, width, height);
-        if (region.intersects(root.boundary))
+    public List<T> find(final double minx, final double miny, final double maxX, final double maxY ){
+        KDAABB region = new KDAABB(Arrays.asList(minx, miny), Arrays.asList(maxX, maxY));
+        if (!region.intersects(root.boundary))
             throw new IllegalArgumentException("Query rectangle is outside the quadtree boundaries");
 
         List<T> results = new ArrayList<>();
@@ -84,11 +91,11 @@ public class QuadTree<T extends Positionable> {
         queue.add(root);
         while (!queue.isEmpty()){
             Node<T> cur = queue.poll();
-            if (cur.boundary.intersects(region)) {
+            if (!cur.boundary.intersects(region)) {
                 continue;
             }
 
-            if (cur.data != null && region.contains(cur.data.getCoordinate(0), cur.data.getCoordinate(1))){
+            if (cur.data != null && region.contains(cur.data)){
                 results.add(cur.data);
             }
 

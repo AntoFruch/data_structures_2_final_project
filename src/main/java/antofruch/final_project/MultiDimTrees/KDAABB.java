@@ -68,4 +68,8 @@ public class KDAABB {
     public List<Double> getMax() {
         return max;
     }
+
+    public double getWidth(int axis){
+        return max.get(axis) - min.get(axis);
+    }
 }
