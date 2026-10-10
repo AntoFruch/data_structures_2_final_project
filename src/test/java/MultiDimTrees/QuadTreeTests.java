@@ -1,6 +1,7 @@
-package QuadTree;
+package MultiDimTrees;
 
-import antofruch.final_project.QuadTree.*;
+import antofruch.final_project.MultiDimTrees.QuadTree.QuadTree;
+import antofruch.final_project.MultiDimTrees.Positionable;
 import org.junit.jupiter.api.*;
 
 import java.util.List;
@@ -21,13 +22,20 @@ class QuadTreeTests {
         }
 
         @Override
-        public double getX() {
-            return x;
+        public double getCoordinate(int axis) {
+            switch (axis) {
+                case 0:
+                    return x;
+                case 1:
+                    return y;
+                default:
+                    throw new IllegalArgumentException("Invalid axis");
+            }
         }
 
         @Override
-        public double getY() {
-            return y;
+        public int getDimension() {
+            return 2;
         }
 
         public String toString() {

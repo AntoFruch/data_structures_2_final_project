@@ -1,4 +1,4 @@
-package antofruch.final_project.QuadTree;
+package antofruch.final_project.MultiDimTrees.QuadTree;
 
 /**
  * Axis-aligned bounded box representation

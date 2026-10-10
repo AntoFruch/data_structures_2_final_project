@@ -1,7 +1,13 @@
-package antofruch.final_project.QuadTree;
+package antofruch.final_project.MultiDimTrees.QuadTree;
+
+import antofruch.final_project.MultiDimTrees.Positionable;
 
 import java.util.*;
 
+/**
+ * A quadtree data structure for storing and querying two-dimensional spatial data.
+ * @param <T> T must implement Positionable
+ */
 public class QuadTree<T extends Positionable> {
 
     private final int maxSubdivisionDepth;
@@ -28,7 +34,7 @@ public class QuadTree<T extends Positionable> {
         }
 
         public boolean contains(T element) {
-            return boundary.contains(element.getX(), element.getY());
+            return boundary.contains(element.getCoordinate(0), element.getCoordinate(1));
         }
 
         /**
@@ -52,8 +58,8 @@ public class QuadTree<T extends Positionable> {
 
         private int calculateQuadrant(T element){
             // each condition on x and y turn a bit to 0 or 1 making the final index (0b00, 0b01, 0b10, 0b11)
-            int bitX = (element.getX() >= boundary.x + boundary.width / 2) ? 1 : 0;
-            int bitY = (element.getY() >= boundary.y + boundary.height / 2) ? 1 : 0;
+            int bitX = (element.getCoordinate(0) >= boundary.x + boundary.width / 2) ? 1 : 0;
+            int bitY = (element.getCoordinate(1) >= boundary.y + boundary.height / 2) ? 1 : 0;
             return bitX | (bitY << 1);
         }
 
@@ -82,7 +88,7 @@ public class QuadTree<T extends Positionable> {
                 continue;
             }
 
-            if (cur.data != null && region.contains(cur.data.getX(), cur.data.getY())){
+            if (cur.data != null && region.contains(cur.data.getCoordinate(0), cur.data.getCoordinate(1))){
                 results.add(cur.data);
             }
 
@@ -94,6 +100,12 @@ public class QuadTree<T extends Positionable> {
     }
 
     public boolean insert(final T element){
+        // Preventive programming
+        if (element == null)
+            throw new IllegalArgumentException("Element must not be null");
+        if (element.getDimension() != 2)
+            throw new IllegalArgumentException("Element must be 2-dimensional");
+
         // if the element is not in the quadtree boundaries, we throw an exception
         if (!root.contains(element))
             throw new IllegalArgumentException("Element is outside the quadtree boundaries");
