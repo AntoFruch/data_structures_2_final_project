@@ -11,7 +11,13 @@ import java.util.*;
  */
 public class QuadTree<T extends IPositionable> {
 
+    /** max depth of subdivision*/
     private final int maxSubdivisionDepth;
+
+    /**
+     * Internal Node class
+     * @param <T>
+     */
     static class Node<T extends IPositionable> {
         /** stored data */
         private T data;
@@ -74,11 +80,27 @@ public class QuadTree<T extends IPositionable> {
     /** the root node of the quadtree */
     Node<T> root;
 
+    /**
+     * Constructor for the QuadTree
+     * @param minX : min x bound of the bounding box
+     * @param minY : min y bound of the bounding box
+     * @param maxX : max x bound of the bounding box
+     * @param maxY : max y bound of the bounding box
+     * @param max_subdivision_depth : maximum depth of subdivision
+     */
     public QuadTree(final double minX, final double minY, final double maxX, final double maxY, final int max_subdivision_depth){
         root = new Node<>(minX, minY, maxX, maxY, 0);
         maxSubdivisionDepth = max_subdivision_depth;
     }
 
+    /**
+     * Find all elements within a given rectangle
+     * @param minx : min x bound of the query rectangle
+     * @param miny : min y bound of the query rectangle
+     * @param maxX : max x bound of the query rectangle
+     * @param maxY : max y bound of the query rectangle
+     * @return List of elements within the query rectangle
+     */
     public List<T> find(final double minx, final double miny, final double maxX, final double maxY ){
         KDAABB region = new KDAABB(Arrays.asList(minx, miny), Arrays.asList(maxX, maxY));
         if (!region.intersects(root.boundary))
@@ -104,6 +126,11 @@ public class QuadTree<T extends IPositionable> {
         return results;
     }
 
+    /**
+     * Insert an element into the quadtree
+     * @param element : the element to insert
+     * @return true if the element was inserted, false otherwise
+     */
     public boolean insert(final T element){
         // Preventive programming
         if (element == null)
