@@ -29,8 +29,8 @@ public class QuadTree<T extends IPositionable> {
         private Node<T>[] children;
 
 
-        public Node(final double x, final double y, final double width, final double height, final int subdivision_depth){
-            this.boundary = new KDAABB(Arrays.asList(x, y), Arrays.asList(x + width, y + height));
+        public Node(final double minX, final double minY, final double maxX, final double maxY, final int subdivision_depth){
+            this.boundary = new KDAABB(Arrays.asList(minX, minY), Arrays.asList(maxX, maxY));
             this.subdivisionDepth = subdivision_depth;
         }
 
@@ -49,10 +49,10 @@ public class QuadTree<T extends IPositionable> {
             double minX  = boundary.getMin().get(0);
             double minY  = boundary.getMin().get(1);
 
-            children[0] = new Node<>(minX, minY, halfW, halfH, subdivisionDepth + 1);
-            children[1] = new Node<>(minX + halfW, minY, halfW, halfH, subdivisionDepth + 1);
-            children[2] = new Node<>(minX, minY + halfH, halfW, halfH, subdivisionDepth + 1);
-            children[3] = new Node<>(minX + halfW, minY + halfH, halfW, halfH, subdivisionDepth + 1);
+            children[0] = new Node<>(minX, minY, minX + halfW, minY + halfH, subdivisionDepth + 1);
+            children[1] = new Node<>(minX + halfW, minY, minX + halfW * 2, minY + halfH, subdivisionDepth + 1);
+            children[2] = new Node<>(minX, minY + halfH, minX + halfW, minY + halfH * 2, subdivisionDepth + 1);
+            children[3] = new Node<>(minX + halfW, minY + halfH, minX + halfW * 2, minY + halfH * 2, subdivisionDepth + 1);
 
             // move the data in adequate child
             children[calculateQuadrant(data)].data = data;
@@ -74,9 +74,8 @@ public class QuadTree<T extends IPositionable> {
     /** the root node of the quadtree */
     Node<T> root;
 
-    public QuadTree(final double initial_width, final double initial_height, final int max_subdivision_depth){
-        // FIXME: At the moment we assume the data coordinates will be positive
-        root = new Node<>(0, 0, initial_width, initial_height, 0);
+    public QuadTree(final double minX, final double minY, final double maxX, final double maxY, final int max_subdivision_depth){
+        root = new Node<>(minX, minY, maxX, maxY, 0);
         maxSubdivisionDepth = max_subdivision_depth;
     }
 

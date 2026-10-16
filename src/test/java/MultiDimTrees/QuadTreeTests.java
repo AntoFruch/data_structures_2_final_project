@@ -47,7 +47,11 @@ class QuadTreeTests {
 
     @BeforeEach
     void setUp() {
-        quadTree = new QuadTree<>(100, 100, 6);
+        quadTree = new QuadTree<>(
+                0,0,
+                100, 100,
+                6
+        );
     }
 
     @Test
