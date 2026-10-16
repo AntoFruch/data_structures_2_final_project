@@ -1,19 +1,18 @@
 package antofruch.final_project.MultiDimTrees.QuadTree;
 
 import antofruch.final_project.MultiDimTrees.KDAABB;
-import antofruch.final_project.MultiDimTrees.Positionable;
+import antofruch.final_project.MultiDimTrees.IPositionable;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 /**
  * A quadtree data structure for storing and querying two-dimensional spatial data.
  * @param <T> T must implement Positionable
  */
-public class QuadTree<T extends Positionable> {
+public class QuadTree<T extends IPositionable> {
 
     private final int maxSubdivisionDepth;
-    static class Node<T extends Positionable> {
+    static class Node<T extends IPositionable> {
         /** stored data */
         private T data;
 
@@ -35,7 +34,7 @@ public class QuadTree<T extends Positionable> {
             this.subdivisionDepth = subdivision_depth;
         }
 
-        public boolean contains(Positionable element) {
+        public boolean contains(IPositionable element) {
             return boundary.contains(element);
         }
 

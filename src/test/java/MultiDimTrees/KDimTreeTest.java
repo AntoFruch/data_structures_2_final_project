@@ -1,8 +1,7 @@
 package MultiDimTrees;
 
 import antofruch.final_project.MultiDimTrees.KDAABB;
-import antofruch.final_project.MultiDimTrees.Positionable;
-import antofruch.final_project.MultiDimTrees.QuadTree.QuadTree;
+import antofruch.final_project.MultiDimTrees.IPositionable;
 import antofruch.final_project.MultiDimTrees.kDimTree.KDimTree;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class KDimTreeTest {
 
-    static class TestItem3D implements Positionable {
+    static class TestItem3D implements IPositionable {
         private final double x;
         private final double y;
         private final double z;
@@ -52,7 +51,7 @@ public class KDimTreeTest {
             return "TestItem3D{name='" + name + "', x=" + x + ", y=" + y + ", z=" + z + "}";
         }
     }
-    static class TestItem6D implements Positionable {
+    static class TestItem6D implements IPositionable {
         private final double x;
         private final double y;
         private final double z;

@@ -20,7 +20,7 @@ public class KDAABB {
         this.max = max;
     }
 
-    public boolean contains(Positionable point){
+    public boolean contains(IPositionable point){
         if (point == null)
             throw new IllegalArgumentException("Point must not be null");
         if (point.getDimension() != dimension)

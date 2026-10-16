@@ -1,7 +1,7 @@
 package antofruch.final_project.MultiDimTrees.kDimTree;
 
 import antofruch.final_project.MultiDimTrees.KDAABB;
-import antofruch.final_project.MultiDimTrees.Positionable;
+import antofruch.final_project.MultiDimTrees.IPositionable;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -12,12 +12,12 @@ import java.util.Queue;
  * A k-dimensional tree data structure for storing and querying multidimensional spatial data.
  * @param <T> T must implement Positionable
  */
-public class KDimTree<T extends Positionable> {
+public class KDimTree<T extends IPositionable> {
 
     /** The dimensionality of the tree */
     private final int dimension;
 
-    static class Node<T extends Positionable> {
+    static class Node<T extends IPositionable> {
         T data;
 
         int depth;
