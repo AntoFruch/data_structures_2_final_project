@@ -17,14 +17,27 @@ public class KDimTree<T extends IPositionable> {
     /** The dimensionality of the tree */
     private final int dimension;
 
+    /**
+     * Internal Node class
+     * @param <T>
+     */
     static class Node<T extends IPositionable> {
+        /** Data store by the node */
         T data;
 
+        /** The depth of the node in the tree */
         int depth;
 
+        /** left child node */
         Node<T> left;
+        /** right child node */
         Node<T> right;
 
+        /**
+         * Constructor of the inner class Node
+         * @param data - data to store
+         * @param depth - depth of the node
+         */
         public Node(T data, int depth) {
             this.data = data;
             this.depth = depth;
@@ -33,13 +46,23 @@ public class KDimTree<T extends IPositionable> {
         }
     }
 
+    /** The root node of the K-Dim Tree */
     Node<T> root;
 
+    /**
+     * Constructor of KDimTree
+     * @param dimension - the number of dimensions of the data contained in the tree
+     */
     public KDimTree(int dimension){
         this.dimension = dimension;
         this.root = null;
     }
 
+    /**
+     * Insert the element in the tree
+     * @param element - element to insert
+     * @return - true if inserted successfully, false if not
+     */
     public boolean insert(final T element){
         // Preventive programming
         if (element == null)
@@ -74,6 +97,11 @@ public class KDimTree<T extends IPositionable> {
         }
     }
 
+    /**
+     * Find all the elements contained in the query region.
+     * @param searchRegion - query region
+     * @return list of elements conatained in the search region
+     */
     public List<T> find(final KDAABB searchRegion){
         // Preventive Programming
         if (searchRegion == null)
@@ -111,7 +139,6 @@ public class KDimTree<T extends IPositionable> {
             if (searchRegion.getMin().get(cur.depth % dimension) > cur.data.getCoordinate(cur.depth % dimension)) {
                 if (cur.right != null){
                     queue.add(cur.right);
-                    continue;
                 }
             } else
             // if it overlaps -> search in both
