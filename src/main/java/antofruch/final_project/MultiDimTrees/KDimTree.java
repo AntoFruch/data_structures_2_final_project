@@ -80,9 +80,7 @@ public class KDimTree<T extends IPositionable> implements MultiDimTree<T> {
         // Insertion Logic
         Node<T> cur = root;
         while (true){
-            if (element.getCoordinate(cur.depth % dimension) == cur.data.getCoordinate(cur.depth % dimension)){
-              return false;
-            } else if (element.getCoordinate(cur.depth % dimension) < cur.data.getCoordinate(cur.depth % dimension)) {
+            if (element.getCoordinate(cur.depth % dimension) <= cur.data.getCoordinate(cur.depth % dimension)) {
                 if (cur.left == null) {
                     cur.left = new Node<>(element, cur.depth + 1);
                     return true;
@@ -101,7 +99,7 @@ public class KDimTree<T extends IPositionable> implements MultiDimTree<T> {
     /**
      * Find all the elements contained in the query region.
      * @param searchRegion - query region
-     * @return list of elements conatained in the search region
+     * @return list of elements contained in the search region
      */
     @Override
     public List<T> find(final KDAABB searchRegion){

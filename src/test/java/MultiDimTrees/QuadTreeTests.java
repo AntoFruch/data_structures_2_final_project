@@ -75,6 +75,16 @@ class QuadTreeTests {
     }
 
     @Test
+    @DisplayName("Insert same key twice")
+    void testInsertSameTwice(){
+        TestItem item1 = new TestItem(25, 25, "A");
+        TestItem item2 = new TestItem(25, 25, "B");
+        quadTree.insert(item1);
+        boolean inserted = quadTree.insert(item2);
+        assertTrue(inserted, "The item should be inserted twice with no problem.");
+    }
+
+    @Test
     @DisplayName("Should find an item within a query region")
     void testFindItem() {
         TestItem item = new TestItem(25, 25, "A");
@@ -93,6 +103,22 @@ class QuadTreeTests {
     void testFindMultipleItems() {
         TestItem item1 = new TestItem(25, 25, "A");
         TestItem item2 = new TestItem(30, 30, "B");
+        quadTree.insert(item1);
+        quadTree.insert(item2);
+
+        List<Double> min = Arrays.asList(20.0, 20.0);
+        List<Double> max = Arrays.asList(31.0, 31.0);
+        KDAABB region = new KDAABB(min, max);
+        List<TestItem> found = quadTree.find(region);
+
+        assertEquals(2, found.size(), "Both items should be found within the query region.");
+    }
+
+    @Test
+    @DisplayName("Should find multiple same items within a query region")
+    void testFindMultipleSameItems() {
+        TestItem item1 = new TestItem(25, 25, "A");
+        TestItem item2 = new TestItem(25, 25, "B");
         quadTree.insert(item1);
         quadTree.insert(item2);
 

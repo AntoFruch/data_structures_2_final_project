@@ -109,6 +109,16 @@ public class KDimTreeTest {
     }
 
     @Test
+    @DisplayName("Insert same key twice")
+    void testInsertSameTwice(){
+        TestItem3D item1 = new TestItem3D(25, 25, 25, "A");
+        TestItem3D item2 = new TestItem3D(25, 25, 25, "B");
+        tree.insert(item1);
+        boolean inserted = tree.insert(item2);
+        assertTrue(inserted, "The item should be inserted twice with no problem.");
+    }
+
+    @Test
     @DisplayName("Should successfully insert multiple items")
     void testInsertMultipleItems() {
         TestItem3D item1 = new TestItem3D(25, 25, 25, "A");
@@ -129,6 +139,23 @@ public class KDimTreeTest {
         TestItem3D item1 = new TestItem3D(25, 25, 25, "A");
         TestItem3D item2 = new TestItem3D(30, 30, 30, "B");
         TestItem3D item3 = new TestItem3D(22, 23, 29, "C");
+        tree.insert(item1);
+        tree.insert(item2);
+        tree.insert(item3);
+
+        List<Double> min = Arrays.asList(20.0, 20.0, 20.0);
+        List<Double> max = Arrays.asList(30.0, 30.0, 30.0);
+        List<TestItem3D> found = tree.find(new KDAABB(min, max));
+
+        assertEquals(3, found.size(), "All three items should be found within the query region.");
+    }
+
+    @Test
+    @DisplayName("Should find multiple same items within a query region")
+    void testFindMultipleSameItems() {
+        TestItem3D item1 = new TestItem3D(25, 25, 25, "A");
+        TestItem3D item2 = new TestItem3D(25, 25, 25, "B");
+        TestItem3D item3 = new TestItem3D(25, 25, 25, "C");
         tree.insert(item1);
         tree.insert(item2);
         tree.insert(item3);

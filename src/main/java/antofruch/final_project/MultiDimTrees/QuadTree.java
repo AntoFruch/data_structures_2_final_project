@@ -32,12 +32,22 @@ public class QuadTree<T extends IPositionable> implements MultiDimTree<T> {
         private final int subdivisionDepth;
 
         /** north-west child node */
-        private Node<T>[] children;
+        private final Node<T>[] children = new Node[4];
 
 
         public Node(final double minX, final double minY, final double maxX, final double maxY, final int subdivision_depth){
             this.boundary = new KDAABB(Arrays.asList(minX, minY), Arrays.asList(maxX, maxY));
             this.subdivisionDepth = subdivision_depth;
+        }
+
+        public Node(final Node node){
+            this(
+                node.boundary.getMin().get(0),
+                node.boundary.getMin().get(1),
+                node.boundary.getMax().get(0),
+                node.boundary.getMax().get(1),
+                node.subdivisionDepth
+            );
         }
 
         public boolean contains(IPositionable element) {
@@ -49,7 +59,6 @@ public class QuadTree<T extends IPositionable> implements MultiDimTree<T> {
          * */
         public void subdivide(){
             // creation of child nodes
-            children = new Node[4];
             double halfW = boundary.getWidth(0) / 2;
             double halfH = boundary.getWidth(1) / 2;
             double minX  = boundary.getMin().get(0);
@@ -121,6 +130,8 @@ public class QuadTree<T extends IPositionable> implements MultiDimTree<T> {
 
             if (cur.subdivided) {
                 queue.addAll(Arrays.asList(cur.children));
+            } else if (cur.children[0] != null) { // the max subdivision case with linked list at the end
+                queue.add(cur.children[0]);
             }
         }
         return results;
@@ -145,11 +156,10 @@ public class QuadTree<T extends IPositionable> implements MultiDimTree<T> {
 
         Node<T> cur = root;
         while (true) {
-            if (cur.subdivided) {
-                // node is subdivided, we go down in the right quadrant
+            if (cur.subdivided) { // node is subdivided, we go down in the right quadrant
                 cur = cur.children[cur.calculateQuadrant(element)];
-            } else {
-                // The node is a leaf
+
+            } else { // The node is a leaf
                 if (cur.data == null) {
                     // The leaf is empty, we place the element there
                     cur.data = element;
@@ -158,8 +168,9 @@ public class QuadTree<T extends IPositionable> implements MultiDimTree<T> {
 
                 // The node already contains an element, we check the maximum depth before subdividing.
                 if (cur.subdivisionDepth >= maxSubdivisionDepth) {
-                    // FIXME: linked list when max subdivision is reached
-                    throw new UnsupportedOperationException("Maximum subdivision depth reached, unable to insert element");
+                    cur.children[0] = new Node<>(cur);
+                    cur.children[0].data = element;
+                    return true;
                 }
 
                 // we subdivide the node
