@@ -1,7 +1,7 @@
-package antofruch.final_project.MultiDimTrees.QuadTree;
+package antofruch.final_project.MultiDimTrees;
 
-import antofruch.final_project.MultiDimTrees.KDAABB;
-import antofruch.final_project.MultiDimTrees.IPositionable;
+import antofruch.final_project.MultiDimTrees.utils.IPositionable;
+import antofruch.final_project.MultiDimTrees.utils.KDAABB;
 
 import java.util.*;
 
@@ -9,7 +9,7 @@ import java.util.*;
  * A quadtree data structure for storing and querying two-dimensional spatial data.
  * @param <T> T must implement Positionable
  */
-public class QuadTree<T extends IPositionable> {
+public class QuadTree<T extends IPositionable> implements MultiDimTree<T> {
 
     /** max depth of subdivision*/
     private final int maxSubdivisionDepth;
@@ -95,15 +95,15 @@ public class QuadTree<T extends IPositionable> {
 
     /**
      * Find all elements within a given rectangle
-     * @param minx : min x bound of the query rectangle
-     * @param miny : min y bound of the query rectangle
-     * @param maxX : max x bound of the query rectangle
-     * @param maxY : max y bound of the query rectangle
+     * @param searchRegion - region where to search
      * @return List of elements within the query rectangle
      */
-    public List<T> find(final double minx, final double miny, final double maxX, final double maxY ){
-        KDAABB region = new KDAABB(Arrays.asList(minx, miny), Arrays.asList(maxX, maxY));
-        if (!region.intersects(root.boundary))
+    @Override
+    public List<T> find(KDAABB searchRegion){
+        // Preventive programming
+        if (searchRegion.getDimension() > 2)
+            throw new IllegalArgumentException("Search region must be 2-dimensional");
+        if (!searchRegion.intersects(root.boundary))
             throw new IllegalArgumentException("Query rectangle is outside the quadtree boundaries");
 
         List<T> results = new ArrayList<>();
@@ -111,11 +111,11 @@ public class QuadTree<T extends IPositionable> {
         queue.add(root);
         while (!queue.isEmpty()){
             Node<T> cur = queue.poll();
-            if (!cur.boundary.intersects(region)) {
+            if (!cur.boundary.intersects(searchRegion)) {
                 continue;
             }
 
-            if (cur.data != null && region.contains(cur.data)){
+            if (cur.data != null && searchRegion.contains(cur.data)){
                 results.add(cur.data);
             }
 
@@ -131,6 +131,7 @@ public class QuadTree<T extends IPositionable> {
      * @param element : the element to insert
      * @return true if the element was inserted, false otherwise
      */
+    @Override
     public boolean insert(final T element){
         // Preventive programming
         if (element == null)

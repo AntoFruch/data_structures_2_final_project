@@ -1,8 +1,9 @@
 package MultiDimTrees;
 
-import antofruch.final_project.MultiDimTrees.KDAABB;
-import antofruch.final_project.MultiDimTrees.IPositionable;
-import antofruch.final_project.MultiDimTrees.kDimTree.KDimTree;
+import antofruch.final_project.MultiDimTrees.MultiDimTree;
+import antofruch.final_project.MultiDimTrees.utils.KDAABB;
+import antofruch.final_project.MultiDimTrees.utils.IPositionable;
+import antofruch.final_project.MultiDimTrees.KDimTree;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -100,7 +101,7 @@ public class KDimTreeTest {
         }
     }
 
-    private KDimTree<TestItem3D> tree;
+    private MultiDimTree<TestItem3D> tree;
 
     @BeforeEach
     void setUp() {

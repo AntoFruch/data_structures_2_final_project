@@ -1,7 +1,7 @@
-package antofruch.final_project.MultiDimTrees.kDimTree;
+package antofruch.final_project.MultiDimTrees;
 
-import antofruch.final_project.MultiDimTrees.KDAABB;
-import antofruch.final_project.MultiDimTrees.IPositionable;
+import antofruch.final_project.MultiDimTrees.utils.IPositionable;
+import antofruch.final_project.MultiDimTrees.utils.KDAABB;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ import java.util.Queue;
  * A k-dimensional tree data structure for storing and querying multidimensional spatial data.
  * @param <T> T must implement Positionable
  */
-public class KDimTree<T extends IPositionable> {
+public class KDimTree<T extends IPositionable> implements MultiDimTree<T> {
 
     /** The dimensionality of the tree */
     private final int dimension;
@@ -53,7 +53,7 @@ public class KDimTree<T extends IPositionable> {
      * Constructor of KDimTree
      * @param dimension - the number of dimensions of the data contained in the tree
      */
-    public KDimTree(int dimension){
+    public KDimTree(final int dimension){
         this.dimension = dimension;
         this.root = null;
     }
@@ -63,6 +63,7 @@ public class KDimTree<T extends IPositionable> {
      * @param element - element to insert
      * @return - true if inserted successfully, false if not
      */
+    @Override
     public boolean insert(final T element){
         // Preventive programming
         if (element == null)
@@ -102,6 +103,7 @@ public class KDimTree<T extends IPositionable> {
      * @param searchRegion - query region
      * @return list of elements conatained in the search region
      */
+    @Override
     public List<T> find(final KDAABB searchRegion){
         // Preventive Programming
         if (searchRegion == null)

@@ -1,9 +1,12 @@
 package MultiDimTrees;
 
-import antofruch.final_project.MultiDimTrees.QuadTree.QuadTree;
-import antofruch.final_project.MultiDimTrees.IPositionable;
+import antofruch.final_project.MultiDimTrees.MultiDimTree;
+import antofruch.final_project.MultiDimTrees.utils.KDAABB;
+import antofruch.final_project.MultiDimTrees.QuadTree;
+import antofruch.final_project.MultiDimTrees.utils.IPositionable;
 import org.junit.jupiter.api.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -43,7 +46,7 @@ class QuadTreeTests {
         }
     }
 
-    private QuadTree<TestItem> quadTree;
+    private MultiDimTree<TestItem> quadTree;
 
     @BeforeEach
     void setUp() {
@@ -77,7 +80,10 @@ class QuadTreeTests {
         TestItem item = new TestItem(25, 25, "A");
         quadTree.insert(item);
 
-        List<TestItem> found = quadTree.find(20, 20, 30, 30);
+        List<Double> min = Arrays.asList(20.0, 20.0);
+        List<Double> max = Arrays.asList(30.0, 30.0);
+        KDAABB region = new KDAABB(min, max);
+        List<TestItem> found = quadTree.find(region);
 
         assertFalse(found.isEmpty(), "The item should be found within the query region.");
     }
@@ -90,7 +96,10 @@ class QuadTreeTests {
         quadTree.insert(item1);
         quadTree.insert(item2);
 
-        List<TestItem> found = quadTree.find(20, 20, 31, 31);
+        List<Double> min = Arrays.asList(20.0, 20.0);
+        List<Double> max = Arrays.asList(31.0, 31.0);
+        KDAABB region = new KDAABB(min, max);
+        List<TestItem> found = quadTree.find(region);
 
         assertEquals(2, found.size(), "Both items should be found within the query region.");
     }
