@@ -1,19 +1,18 @@
 package MultiDimTrees;
 
+
 import antofruch.final_project.MultiDimTrees.MultiDimTree;
-import antofruch.final_project.MultiDimTrees.utils.KDAABB;
 import antofruch.final_project.MultiDimTrees.QuadTree;
-import antofruch.final_project.MultiDimTrees.utils.IPositionable;
+import antofruch.final_project.MultiDimTrees.QuadTreeKdTreeMix;
 import org.junit.jupiter.api.*;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class QuadTreeTests {
 
-    static class TestItem implements IPositionable {
+    static class TestItem {
         private final double x;
         private final double y;
         private final String name;
@@ -24,23 +23,6 @@ class QuadTreeTests {
             this.name = name;
         }
 
-        @Override
-        public double getCoordinate(int axis) {
-            switch (axis) {
-                case 0:
-                    return x;
-                case 1:
-                    return y;
-                default:
-                    throw new IllegalArgumentException("Invalid axis");
-            }
-        }
-
-        @Override
-        public int getDimension() {
-            return 2;
-        }
-
         public String toString() {
             return "TestItem{name='" + name + "', x=" + x + ", y=" + y + "}";
         }
@@ -48,12 +30,36 @@ class QuadTreeTests {
 
     private MultiDimTree<TestItem> quadTree;
 
+    private int compareTestItem(TestItem a, TestItem b, int axis) {
+        switch (axis) {
+            case 0:
+                return Double.compare(a.x, b.x);
+            case 1:
+                return Double.compare(a.y, b.y);
+            default:
+                throw new IllegalArgumentException("Invalid axis");
+        }
+    }
+
     @BeforeEach
     void setUp() {
-        quadTree = new QuadTree<>(
-                0,0,
-                100, 100,
-                6
+        TestItem min = new TestItem(0, 0, "Min");
+        TestItem max = new TestItem(100, 100, "Max");
+        quadTree = new QuadTreeKdTreeMix<>(
+                min,
+                max,
+                6,
+                this::compareTestItem,
+                (a, b, axis) -> {
+                    switch (axis) {
+                        case 0:
+                            return new TestItem((a.x + b.x) / 2.0, a.y, "");
+                        case 1:
+                            return new TestItem(a.x, (a.y + b.y) / 2.0, "");
+                        default:
+                            throw new IllegalArgumentException("Invalid axis");
+                    }
+                }
         );
     }
 
@@ -90,10 +96,9 @@ class QuadTreeTests {
         TestItem item = new TestItem(25, 25, "A");
         quadTree.insert(item);
 
-        List<Double> min = Arrays.asList(20.0, 20.0);
-        List<Double> max = Arrays.asList(30.0, 30.0);
-        KDAABB region = new KDAABB(min, max);
-        List<TestItem> found = quadTree.find(region);
+        TestItem min = new TestItem(20, 20, "min");
+        TestItem max = new TestItem(30, 30, "max");
+        List<TestItem> found = quadTree.find(min, max);
 
         assertFalse(found.isEmpty(), "The item should be found within the query region.");
     }
@@ -106,10 +111,9 @@ class QuadTreeTests {
         quadTree.insert(item1);
         quadTree.insert(item2);
 
-        List<Double> min = Arrays.asList(20.0, 20.0);
-        List<Double> max = Arrays.asList(31.0, 31.0);
-        KDAABB region = new KDAABB(min, max);
-        List<TestItem> found = quadTree.find(region);
+        TestItem min = new TestItem(20, 20, "min");
+        TestItem max = new TestItem(31, 31, "max");
+        List<TestItem> found = quadTree.find(min, max);
 
         assertEquals(2, found.size(), "Both items should be found within the query region.");
     }
@@ -122,10 +126,9 @@ class QuadTreeTests {
         quadTree.insert(item1);
         quadTree.insert(item2);
 
-        List<Double> min = Arrays.asList(20.0, 20.0);
-        List<Double> max = Arrays.asList(31.0, 31.0);
-        KDAABB region = new KDAABB(min, max);
-        List<TestItem> found = quadTree.find(region);
+        TestItem min = new TestItem(20, 20, "min");
+        TestItem max = new TestItem(31, 31, "max");
+        List<TestItem> found = quadTree.find(min, max);
 
         assertEquals(2, found.size(), "Both items should be found within the query region.");
     }

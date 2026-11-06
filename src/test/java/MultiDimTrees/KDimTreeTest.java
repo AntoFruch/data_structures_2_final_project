@@ -1,8 +1,6 @@
 package MultiDimTrees;
 
 import antofruch.final_project.MultiDimTrees.MultiDimTree;
-import antofruch.final_project.MultiDimTrees.utils.KDAABB;
-import antofruch.final_project.MultiDimTrees.utils.IPositionable;
 import antofruch.final_project.MultiDimTrees.KDimTree;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class KDimTreeTest {
 
-    static class TestItem3D implements IPositionable {
+    static class TestItem3D {
         private final double x;
         private final double y;
         private final double z;
@@ -28,84 +26,29 @@ public class KDimTreeTest {
             this.z = z;
             this.name = name;
         }
-
-        @Override
-        public double getCoordinate(int axis) {
-            switch (axis) {
-                case 0:
-                    return x;
-                case 1:
-                    return y;
-                case 2:
-                    return z;
-                default:
-                    throw new IllegalArgumentException("Invalid axis");
-            }
-        }
-
-        @Override
-        public int getDimension() {
-            return 3;
-        }
-
         public String toString() {
             return "TestItem3D{name='" + name + "', x=" + x + ", y=" + y + ", z=" + z + "}";
-        }
-    }
-    static class TestItem6D implements IPositionable {
-        private final double x;
-        private final double y;
-        private final double z;
-        private final double a;
-        private final double b;
-        private final double c;
-        private final String name;
-
-        public TestItem6D(double x, double y, double z, double a, double b, double c, String name) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            this.a = a;
-            this.b = b;
-            this.c = c;
-            this.name = name;
-        }
-
-        @Override
-        public double getCoordinate(int axis) {
-            switch (axis) {
-                case 0:
-                    return x;
-                case 1:
-                    return y;
-                case 2:
-                    return z;
-                case 3:
-                    return a;
-                case 4:
-                    return b;
-                case 5:
-                    return c;
-                default:
-                    throw new IllegalArgumentException("Invalid axis");
-            }
-        }
-
-        @Override
-        public int getDimension() {
-            return 6;
-        }
-
-        public String toString() {
-            return "TestItem6D{name='" + name + "', x=" + x + ", y=" + y + ", z=" + z + ", a=" + a + ", b=" + b + ", c=" + c + "}";
         }
     }
 
     private MultiDimTree<TestItem3D> tree;
 
+    private int compareTestItem3D(TestItem3D first, TestItem3D second, int dimension) {
+        switch (dimension) {
+            case 0:
+                return Double.compare(first.x, second.x);
+            case 1:
+                return Double.compare(first.y, second.y);
+            case 2:
+                return Double.compare(first.z, second.z);
+            default:
+                throw new IllegalArgumentException("Invalid dimension");
+        }
+    }
+
     @BeforeEach
     void setUp() {
-        tree = new KDimTree<>(3);
+        tree = new KDimTree<>(3, this::compareTestItem3D);
     }
 
     @Test
@@ -143,9 +86,9 @@ public class KDimTreeTest {
         tree.insert(item2);
         tree.insert(item3);
 
-        List<Double> min = Arrays.asList(20.0, 20.0, 20.0);
-        List<Double> max = Arrays.asList(30.0, 30.0, 30.0);
-        List<TestItem3D> found = tree.find(new KDAABB(min, max));
+        TestItem3D min = new TestItem3D(20, 20, 20, "Min");
+        TestItem3D max = new TestItem3D(31, 31, 31, "Max");
+        List<TestItem3D> found = tree.find(min ,max);
 
         assertEquals(3, found.size(), "All three items should be found within the query region.");
     }
@@ -160,9 +103,9 @@ public class KDimTreeTest {
         tree.insert(item2);
         tree.insert(item3);
 
-        List<Double> min = Arrays.asList(20.0, 20.0, 20.0);
-        List<Double> max = Arrays.asList(30.0, 30.0, 30.0);
-        List<TestItem3D> found = tree.find(new KDAABB(min, max));
+        TestItem3D min = new TestItem3D(20, 20, 20, "Min");
+        TestItem3D max = new TestItem3D(30, 30, 30, "Max");
+        List<TestItem3D> found = tree.find(min, max);
 
         assertEquals(3, found.size(), "All three items should be found within the query region.");
     }

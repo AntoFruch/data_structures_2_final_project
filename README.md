@@ -2,3 +2,8 @@
 
 ## STEP 1 - MultiDimTrees and k-Dimensional Tree
 See packages [MultiDimTrees](src/main/java/antofruch/final_project/MultiDimTrees/QuadTree) and [kDimTree](src/main/java/antofruch/final_project/MultiDimTrees/kDimTree)
+
+## TODO : 
+* Tests à refaire
+* tous les tests simples ne marchent pas
+* probleme dans la liste chainée de la fin

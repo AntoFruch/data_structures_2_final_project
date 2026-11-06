@@ -1,29 +1,31 @@
 package antofruch.final_project.MultiDimTrees;
 
-import antofruch.final_project.MultiDimTrees.utils.IPositionable;
-import antofruch.final_project.MultiDimTrees.utils.KDAABB;
-
 import java.util.*;
 
 /**
  * A quadtree data structure for storing and querying two-dimensional spatial data.
  * @param <T> T must implement Positionable
  */
-public class QuadTree<T extends IPositionable> implements MultiDimTree<T> {
+public class QuadTree<T> implements MultiDimTree<T> {
 
     /** max depth of subdivision*/
     private final int maxSubdivisionDepth;
+
+    private final IComparer<T> comparer;
+    private final IMidPointFinder<T> midPointFinder;
 
     /**
      * Internal Node class
      * @param <T>
      */
-    static class Node<T extends IPositionable> {
+    static class Node<T> {
         /** stored data */
-        private T data;
+        private List<T> data;
+        private final IComparer<T> comparer;
+        private final IMidPointFinder<T> midPointFinder;
 
         /** boundary of the node */
-        private final KDAABB boundary;
+        private final KDAABB<T> boundary;
 
         /** true: the node is subdivided into 4 other nodes */
         private boolean subdivided = false;
@@ -32,25 +34,29 @@ public class QuadTree<T extends IPositionable> implements MultiDimTree<T> {
         private final int subdivisionDepth;
 
         /** north-west child node */
-        private final Node<T>[] children = new Node[4];
+        private final Node<T>[] children;
 
 
-        public Node(final double minX, final double minY, final double maxX, final double maxY, final int subdivision_depth){
-            this.boundary = new KDAABB(Arrays.asList(minX, minY), Arrays.asList(maxX, maxY));
+        public Node(final T min, final T max, final int subdivision_depth, IComparer<T> comparer, IMidPointFinder<T> midPointFinder){
+            data = new LinkedList<>();
+            children = new Node[4];
+            this.comparer = comparer;
+            this.boundary = new KDAABB<T>(min, max, 2, comparer);
             this.subdivisionDepth = subdivision_depth;
+            this.midPointFinder = midPointFinder;
         }
 
-        public Node(final Node node){
+        public Node(final Node<T> node){
             this(
-                node.boundary.getMin().get(0),
-                node.boundary.getMin().get(1),
-                node.boundary.getMax().get(0),
-                node.boundary.getMax().get(1),
-                node.subdivisionDepth
+                node.boundary.getMin(),
+                node.boundary.getMax(),
+                node.subdivisionDepth,
+                node.comparer,
+                node.midPointFinder
             );
         }
 
-        public boolean contains(IPositionable element) {
+        public boolean contains(T element) {
             return boundary.contains(element);
         }
 
@@ -59,19 +65,34 @@ public class QuadTree<T extends IPositionable> implements MultiDimTree<T> {
          * */
         public void subdivide(){
             // creation of child nodes
-            double halfW = boundary.getWidth(0) / 2;
-            double halfH = boundary.getWidth(1) / 2;
-            double minX  = boundary.getMin().get(0);
-            double minY  = boundary.getMin().get(1);
+            T min = boundary.getMin();
+            T max = boundary.getMax();
 
-            children[0] = new Node<>(minX, minY, minX + halfW, minY + halfH, subdivisionDepth + 1);
-            children[1] = new Node<>(minX + halfW, minY, minX + halfW * 2, minY + halfH, subdivisionDepth + 1);
-            children[2] = new Node<>(minX, minY + halfH, minX + halfW, minY + halfH * 2, subdivisionDepth + 1);
-            children[3] = new Node<>(minX + halfW, minY + halfH, minX + halfW * 2, minY + halfH * 2, subdivisionDepth + 1);
+            T midX = midPointFinder.midpoint(min, max, 0);
+            T midY = midPointFinder.midpoint(min, max, 1);
+
+            children[0] = new Node<>(
+                    min,
+                    midPointFinder.midpoint(midX, max, 1),
+                    subdivisionDepth + 1, comparer, midPointFinder);
+            children[1] = new Node<>(
+                    midX,
+                    midPointFinder.midpoint(max, midX, 1),
+                    subdivisionDepth + 1, comparer, midPointFinder);
+            children[2] = new Node<>(
+                    midY,
+                    midPointFinder.midpoint(max, midY, 0),
+                    subdivisionDepth + 1, comparer, midPointFinder);
+            children[3] = new Node<>(
+                    midPointFinder.midpoint(midX, max, 1),
+                    max,
+                    subdivisionDepth + 1, comparer, midPointFinder);
 
             // move the data in adequate child
-            children[calculateQuadrant(data)].data = data;
-            data = null;
+            for (T element : data) {
+                children[calculateQuadrant(element)].data.add(element);
+            }
+            data.clear();
 
             // set the subdivision state to true
             subdivided = true;
@@ -79,8 +100,8 @@ public class QuadTree<T extends IPositionable> implements MultiDimTree<T> {
 
         private int calculateQuadrant(T element){
             // each condition on x and y turn a bit to 0 or 1 making the final index (0b00, 0b01, 0b10, 0b11)
-            int bitX = (element.getCoordinate(0) >= boundary.getMin().get(0) + boundary.getWidth(0) / 2) ? 1 : 0;
-            int bitY = (element.getCoordinate(1) >= boundary.getMin().get(1) + boundary.getWidth(1) / 2) ? 1 : 0;
+            int bitX = (comparer.compare(element, midPointFinder.midpoint(boundary.getMin(), boundary.getMax(), 0), 0) > 0) ? 1 : 0;
+            int bitY = (comparer.compare(element, midPointFinder.midpoint(boundary.getMin(), boundary.getMax(), 1), 1) > 0) ? 1 : 0;
             return bitX | (bitY << 1);
         }
 
@@ -91,27 +112,28 @@ public class QuadTree<T extends IPositionable> implements MultiDimTree<T> {
 
     /**
      * Constructor for the QuadTree
-     * @param minX : min x bound of the bounding box
-     * @param minY : min y bound of the bounding box
-     * @param maxX : max x bound of the bounding box
-     * @param maxY : max y bound of the bounding box
+     * @param min -
+     * @param max -
      * @param max_subdivision_depth : maximum depth of subdivision
      */
-    public QuadTree(final double minX, final double minY, final double maxX, final double maxY, final int max_subdivision_depth){
-        root = new Node<>(minX, minY, maxX, maxY, 0);
+    public QuadTree(final T min, final T max, final int max_subdivision_depth, IComparer<T> comparer, IMidPointFinder<T> midPointFinder){
+        this.comparer = comparer;
+        this.midPointFinder = midPointFinder;
+        root = new Node<>(min, max, 0, comparer, midPointFinder);
         maxSubdivisionDepth = max_subdivision_depth;
     }
 
     /**
      * Find all elements within a given rectangle
-     * @param searchRegion - region where to search
+     * @param min -
+     * @param max -
      * @return List of elements within the query rectangle
      */
     @Override
-    public List<T> find(KDAABB searchRegion){
+    public List<T> find(final T min , final T max){
+        KDAABB<T> searchRegion = new KDAABB<>(min, max, 2, comparer);
+
         // Preventive programming
-        if (searchRegion.getDimension() > 2)
-            throw new IllegalArgumentException("Search region must be 2-dimensional");
         if (!searchRegion.intersects(root.boundary))
             throw new IllegalArgumentException("Query rectangle is outside the quadtree boundaries");
 
@@ -124,14 +146,16 @@ public class QuadTree<T extends IPositionable> implements MultiDimTree<T> {
                 continue;
             }
 
-            if (cur.data != null && searchRegion.contains(cur.data)){
-                results.add(cur.data);
-            }
-
             if (cur.subdivided) {
                 queue.addAll(Arrays.asList(cur.children));
-            } else if (cur.children[0] != null) { // the max subdivision case with linked list at the end
-                queue.add(cur.children[0]);
+            } else {
+                if (cur.data != null) {
+                    for (T element : cur.data) {
+                        if (searchRegion.contains(element)) {
+                            results.add(element);
+                        }
+                    }
+                }
             }
         }
         return results;
@@ -147,8 +171,6 @@ public class QuadTree<T extends IPositionable> implements MultiDimTree<T> {
         // Preventive programming
         if (element == null)
             throw new IllegalArgumentException("Element must not be null");
-        if (element.getDimension() != 2)
-            throw new IllegalArgumentException("Element must be 2-dimensional");
 
         // if the element is not in the quadtree boundaries, we throw an exception
         if (!root.contains(element))
@@ -160,16 +182,15 @@ public class QuadTree<T extends IPositionable> implements MultiDimTree<T> {
                 cur = cur.children[cur.calculateQuadrant(element)];
 
             } else { // The node is a leaf
-                if (cur.data == null) {
+                if (cur.data.isEmpty()) {
                     // The leaf is empty, we place the element there
-                    cur.data = element;
+                    cur.data.add(element);
                     return true;
                 }
 
                 // The node already contains an element, we check the maximum depth before subdividing.
                 if (cur.subdivisionDepth >= maxSubdivisionDepth) {
-                    cur.children[0] = new Node<>(cur);
-                    cur.children[0].data = element;
+                    cur.data.add(element);
                     return true;
                 }
 
