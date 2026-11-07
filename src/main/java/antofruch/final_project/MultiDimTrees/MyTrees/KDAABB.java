@@ -1,4 +1,4 @@
-package antofruch.final_project.MultiDimTrees;
+package antofruch.final_project.MultiDimTrees.MyTrees;
 
 public class KDAABB<T> {
 

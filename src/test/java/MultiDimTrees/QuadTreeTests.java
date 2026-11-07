@@ -1,9 +1,8 @@
 package MultiDimTrees;
 
 
-import antofruch.final_project.MultiDimTrees.MultiDimTree;
-import antofruch.final_project.MultiDimTrees.QuadTree;
-import antofruch.final_project.MultiDimTrees.QuadTreeKdTreeMix;
+import antofruch.final_project.MultiDimTrees.MyTrees.MultiDimTree;
+import antofruch.final_project.MultiDimTrees.MyTrees.QuadTreeKdTreeMix;
 import org.junit.jupiter.api.*;
 
 import java.util.List;

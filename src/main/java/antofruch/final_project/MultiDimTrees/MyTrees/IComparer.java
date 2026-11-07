@@ -1,4 +1,4 @@
-package antofruch.final_project.MultiDimTrees;
+package antofruch.final_project.MultiDimTrees.MyTrees;
 
 /**
  * Interface that describe a space-positionable object.
