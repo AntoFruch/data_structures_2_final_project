@@ -174,7 +174,9 @@ public class QuadTree<T> implements MultiDimTree<T> {
 
         // if the element is not in the quadtree boundaries, we throw an exception
         if (!root.contains(element))
-            throw new IllegalArgumentException("Element is outside the quadtree boundaries");
+            throw new IllegalArgumentException("Element is outside the quadtree boundaries : " +
+                    "\n element: " + element +
+                    "\n boundaries: " + root.boundary.min + " " + root.boundary.max);
 
         Node<T> cur = root;
         while (true) {
