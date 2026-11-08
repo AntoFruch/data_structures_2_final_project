@@ -1,4 +1,4 @@
-package antofruch.final_project.MultiDimTrees.MyTrees;
+package antofruch.final_project.MultiDimTrees;
 
 import java.util.List;
 

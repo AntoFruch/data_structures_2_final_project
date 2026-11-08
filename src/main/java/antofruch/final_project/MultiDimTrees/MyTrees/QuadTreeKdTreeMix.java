@@ -1,5 +1,7 @@
 package antofruch.final_project.MultiDimTrees.MyTrees;
 
+import antofruch.final_project.MultiDimTrees.MultiDimTree;
+
 import java.util.*;
 
 /**
@@ -12,7 +14,6 @@ public class QuadTreeKdTreeMix<T> implements MultiDimTree<T> {
     private final int maxSubdivisionDepth;
 
     private final IComparer<T> comparer;
-    private final IMidPointFinder<T> midPointFinder;
 
     /**
      * Internal Node class
@@ -20,7 +21,7 @@ public class QuadTreeKdTreeMix<T> implements MultiDimTree<T> {
      */
     static class Node<T> {
         /** stored data */
-        private KDimTree<T> data;
+        private final KDimTree<T> data;
         private final IComparer<T> comparer;
         private final IMidPointFinder<T> midPointFinder;
 
@@ -36,24 +37,14 @@ public class QuadTreeKdTreeMix<T> implements MultiDimTree<T> {
         /** north-west child node */
         private final Node<T>[] children;
 
-
+        @SuppressWarnings("unchecked")
         public Node(final T min, final T max, final int subdivision_depth, IComparer<T> comparer, IMidPointFinder<T> midPointFinder){
-            data = new KDimTree<T>(2, comparer);
-            children = new Node[4];
+            data = new KDimTree<>(2, comparer);
+            children = (Node<T>[]) new Node[4];
             this.comparer = comparer;
-            this.boundary = new KDAABB<T>(min, max, 2, comparer);
+            this.boundary = new KDAABB<>(min, max, 2, comparer);
             this.subdivisionDepth = subdivision_depth;
             this.midPointFinder = midPointFinder;
-        }
-
-        public Node(final Node<T> node){
-            this(
-                node.boundary.getMin(),
-                node.boundary.getMax(),
-                node.subdivisionDepth,
-                node.comparer,
-                node.midPointFinder
-            );
         }
 
         public boolean contains(T element) {
@@ -118,7 +109,6 @@ public class QuadTreeKdTreeMix<T> implements MultiDimTree<T> {
      */
     public QuadTreeKdTreeMix(final T min, final T max, final int max_subdivision_depth, IComparer<T> comparer, IMidPointFinder<T> midPointFinder){
         this.comparer = comparer;
-        this.midPointFinder = midPointFinder;
         root = new Node<>(min, max, 0, comparer, midPointFinder);
         maxSubdivisionDepth = max_subdivision_depth;
     }

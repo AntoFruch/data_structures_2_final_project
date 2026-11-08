@@ -1,5 +1,7 @@
 package antofruch.final_project.MultiDimTrees.MyTrees;
 
+import antofruch.final_project.MultiDimTrees.MultiDimTree;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;

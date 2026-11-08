@@ -1,6 +1,10 @@
 package MultiDimTrees;
 
+import antofruch.final_project.MultiDimTrees.MultiDimTree;
 import antofruch.final_project.MultiDimTrees.MyTrees.*;
+import antofruch.final_project.MultiDimTrees.kd3.Kd3TreeAdapter;
+import antofruch.final_project.MultiDimTrees.quad1.QuadTree1Adapter;
+import antofruch.final_project.MultiDimTrees.quad2.QuadTree2Adapter;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.*;
 import org.junit.jupiter.params.provider.Arguments;
@@ -18,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class GlobalTests {
 
-    private static class Point{
+    public static class Point{
         long id;
         public double lat;
         public double lon;
@@ -27,20 +31,9 @@ public class GlobalTests {
             this.lat = lat;
             this.lon = lon;
         }
-
         @Override
         public String toString() {
             return "Point{lat=" + lat + ", lon=" + lon + "}";
-        }
-    }
-    static private Point findMidPoint(Point a, Point b, int axis) {
-        switch (axis) {
-            case 0:
-                return new Point(-1, (a.lat + b.lat) / 2.0, a.lon);
-            case 1:
-                return new Point(-1, a.lat, (a.lon + b.lon) / 2.0);
-            default:
-                throw new IllegalArgumentException("Invalid axis");
         }
     }
     static private int compare(Point a, Point b, int axis) {
@@ -53,7 +46,22 @@ public class GlobalTests {
                 throw new IllegalArgumentException("Invalid axis");
         }
     }
-
+    static private Point findMidPoint(Point a, Point b, int axis) {
+        switch (axis) {
+            case 0:
+                return new Point(-1, (a.lat + b.lat) / 2.0, a.lon);
+            case 1:
+                return new Point(-1, a.lat, (a.lon + b.lon) / 2.0);
+            default:
+                throw new IllegalArgumentException("Invalid axis");
+        }
+    }
+    static private double[] extractKeys(Point p){
+        double[] coordinates = new double[2];
+        coordinates[0] = p.lat;
+        coordinates[1] = p.lon;
+        return coordinates;
+    }
 
     static List<Point> points;
     static Point min;
@@ -108,7 +116,7 @@ public class GlobalTests {
                 if (p.lon > maxLon) maxLon = p.lon;
             }
 
-            min = new Point(-1, minLat, minLon);
+            min = new Point(-1, minLat - 1e-7, minLon - 1e-7);
             max = new Point(-1, maxLat + 1e-7, maxLon + 1e-7);
             System.out.println(
                     "size: " + points.size() +
@@ -187,7 +195,10 @@ public class GlobalTests {
         return Stream.of(
                 Arguments.of("QuadTree", (Supplier<MultiDimTree<Point>>) () -> new QuadTree<>(min, max, 10, GlobalTests::compare, GlobalTests::findMidPoint)),
                 Arguments.of("KDimTree", (Supplier<MultiDimTree<Point>>) () -> new KDimTree<>(2, GlobalTests::compare)),
-                Arguments.of("QuadTreeKdTreeMix", (Supplier<MultiDimTree<Point>>) () -> new QuadTreeKdTreeMix<>(min, max, 10, GlobalTests::compare, GlobalTests::findMidPoint))
+                Arguments.of("QuadTreeKdTreeMix", (Supplier<MultiDimTree<Point>>) () -> new QuadTreeKdTreeMix<>(min, max, 10, GlobalTests::compare, GlobalTests::findMidPoint)),
+                Arguments.of("ext_KdTree3", (Supplier<MultiDimTree<Point>>) () -> new Kd3TreeAdapter<>(2, GlobalTests::extractKeys)),
+                Arguments.of("ext_QuadTree1", (Supplier<MultiDimTree<Point>>) () -> new QuadTree1Adapter<>(min, max, GlobalTests::extractKeys)),
+                Arguments.of("ext_QuadTree2", (Supplier<MultiDimTree<Point>>) () -> new QuadTree2Adapter<>(GlobalTests::extractKeys))
         );
     }
 
@@ -201,33 +212,33 @@ public class GlobalTests {
     @MethodSource("provideTreeImplementations")
     @DisplayName("Successful insertion test")
     public void insertionTest(String treeName, Supplier<MultiDimTree<Point>> treeSupplier) {
-        MultiDimTree<Point> input = treeSupplier.get();
+        MultiDimTree<Point> tree = treeSupplier.get();
         Assertions.assertDoesNotThrow(() -> {
             for(Point p : points){
-                input.insert(p);
+                Assertions.assertTrue(tree.insert(p));
             }
         });
-        List<Point> result = input.find(min, max);
+
+        List<Point> result = tree.find(min, max);
         Assertions.assertEquals(points.size(), result.size());
     }
 
     @ParameterizedTest(name = "[{index}] {0}")
     @MethodSource("provideTreeImplementations")
     @DisplayName("No False Positives")
-    public void noFalsePostiveTest(String treeName, Supplier<MultiDimTree<Point>> treeSupplier) {
-        MultiDimTree<Point> input = treeSupplier.get();
+    public void noFalsePositiveTest(String treeName, Supplier<MultiDimTree<Point>> treeSupplier) {
+        MultiDimTree<Point> tree = treeSupplier.get();
         for(Point p : points){
-            input.insert(p);
+            tree.insert(p);
         }
 
         for (Range r : ranges) {
-            List<Point> found = input.find(r.min, r.max);
+            List<Point> found = tree.find(r.min, r.max);
             for (Point p : found) {
                 assertTrue(p.lat >= r.min.lat && p.lat <= r.max.lat, "Point out latitude");
                 assertTrue(p.lon >= r.min.lon && p.lon <= r.max.lon, "Point out longitude");
             }
         }
     }
-
 }
 
