@@ -129,11 +129,6 @@ public class KDimTree<T> implements MultiDimTree<T> {
         while (!queue.isEmpty()) {
             Node<T> cur = queue.poll();
 
-            // Leaf node
-            if (cur == null) {
-                continue;
-            }
-
             // We add the data if it is contained in the search region
             if (searchRegion.contains(cur.data)) {
                 results.add(cur.data);
