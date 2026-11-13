@@ -106,10 +106,10 @@ All external classes are adapted to [MultiDimTree](src/main/java/antofruch/final
 interface via an Adapter class.
 
 See packages : 
- * [kd1](src/main/java/antofruch/final_project/MultiDimTrees/kd1)
- * [kd2](src/main/java/antofruch/final_project/MultiDimTrees/kd2)
+ * [kd1](src/main/java/antofruch/final_project/MultiDimTrees/kd1) - [ext link](https://github.com/wrex1k/sp_aus2/tree/bc43737e7de6c45e2c243ac9a2f83abff2f1abb9/external/implementations/kd-tree/tinspin-indexes/src/main/java/org/tinspin/index)
+ * [kd2](src/main/java/antofruch/final_project/MultiDimTrees/kd2) - [ext link](https://github.com/WeaveTeam/Weave/tree/db83f8a54c66c1e6a62f843ec7eb44649c62e2f0/GeometryStreamConverter/src/weave/utils)
  * [kd3](src/main/java/antofruch/final_project/MultiDimTrees/kd3)
- * [quad1](src/main/java/antofruch/final_project/MultiDimTrees/quad1)
+ * [quad1](src/main/java/antofruch/final_project/MultiDimTrees/quad1) - [ext link]()
  * [quad2](src/main/java/antofruch/final_project/MultiDimTrees/quad2)
  * [quad3](src/main/java/antofruch/final_project/MultiDimTrees/quad3)
 
@@ -122,4 +122,14 @@ This works thanks to the common interface [MultiDimTree](src/main/java/antofruch
 
 
 ## Test Results
+| Structure de données | No False Positives | Successful insertion test | Temps Total |
+| :--- | :---: | :---: | :---: |
+| QuadTree | 2,760 s | 0,535 s | **3,295 s** |
+| KDimTree | 9,862 s | 1,389 s | **11,251 s** |
+| QuadTreeKdTreeMix | 3,750 s | 0,920 s | **4,670 s** |
+| ext_KdTree1 | 6,915 s | 1,239 s | **8,154 s** |
+| ext_KdTree2 | 6,838 s | 1,330 s | **8,168 s** |
+| ext_KdTree3 | 7,504 s | 3,043 s | **10,547 s** |
+| ext_QuadTree1 | 4,906 s | 1,363 s | **6,269 s** |
+| ext_QuadTree2 | 2,907 s | 0,979 s | **3,886 s** |
 

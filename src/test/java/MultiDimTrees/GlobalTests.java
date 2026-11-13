@@ -2,6 +2,8 @@ package MultiDimTrees;
 
 import antofruch.final_project.MultiDimTrees.MultiDimTree;
 import antofruch.final_project.MultiDimTrees.MyTrees.*;
+import antofruch.final_project.MultiDimTrees.kd1.KdTree1Adapter;
+import antofruch.final_project.MultiDimTrees.kd2.KdTree2Adapter;
 import antofruch.final_project.MultiDimTrees.kd3.Kd3TreeAdapter;
 import antofruch.final_project.MultiDimTrees.quad1.QuadTree1Adapter;
 import antofruch.final_project.MultiDimTrees.quad2.QuadTree2Adapter;
@@ -196,6 +198,8 @@ public class GlobalTests {
                 Arguments.of("QuadTree", (Supplier<MultiDimTree<Point>>) () -> new QuadTree<>(min, max, 10, GlobalTests::compare, GlobalTests::findMidPoint)),
                 Arguments.of("KDimTree", (Supplier<MultiDimTree<Point>>) () -> new KDimTree<>(2, GlobalTests::compare)),
                 Arguments.of("QuadTreeKdTreeMix", (Supplier<MultiDimTree<Point>>) () -> new QuadTreeKdTreeMix<>(min, max, 10, GlobalTests::compare, GlobalTests::findMidPoint)),
+                Arguments.of("ext_KdTree1", (Supplier<MultiDimTree<Point>>) () -> new KdTree1Adapter<>(2, GlobalTests::extractKeys)),
+                Arguments.of("ext_KdTree2", (Supplier<MultiDimTree<Point>>) () -> new KdTree2Adapter<>(2, GlobalTests::extractKeys)),
                 Arguments.of("ext_KdTree3", (Supplier<MultiDimTree<Point>>) () -> new Kd3TreeAdapter<>(2, GlobalTests::extractKeys)),
                 Arguments.of("ext_QuadTree1", (Supplier<MultiDimTree<Point>>) () -> new QuadTree1Adapter<>(min, max, GlobalTests::extractKeys)),
                 Arguments.of("ext_QuadTree2", (Supplier<MultiDimTree<Point>>) () -> new QuadTree2Adapter<>(GlobalTests::extractKeys))
