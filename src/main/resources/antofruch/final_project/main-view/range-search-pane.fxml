@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="antofruch.final_project.Contollers.MainView.RangeSearchPaneController">
+   <children>
+      <VBox spacing="10.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+         <children>
+            <GridPane alignment="CENTER" hgap="10.0" vgap="10.0">
+               <children>
+                  <Label text="Min Latitude:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                  <TextField fx:id="minLatField" promptText="Min Latitude" text="-90" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                  <Label text="Max Latitude:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                  <TextField fx:id="maxLatField" promptText="Max Latitude" text="90" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <Label text="Min Longitude:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                  <TextField fx:id="minLngField" promptText="Min Longitude" text="-180" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                  <Label text="Max Longitude:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                  <TextField fx:id="maxLngField" promptText="Max Longitude" text="180" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+               </children>
+               <columnConstraints>
+                  <ColumnConstraints />
+                  <ColumnConstraints />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
+               </rowConstraints>
+            </GridPane>
+            <Button fx:id="searchButton" mnemonicParsing="false" onAction="#handleSearch" text="Search" />
+            <Label fx:id="errorLabel" managed="false" textFill="RED" visible="false" wrapText="true" />
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

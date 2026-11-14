@@ -9,12 +9,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
-public class Kd3TreeAdapter<T> implements MultiDimTree<T> {
+public class KdTree3Adapter<T> implements MultiDimTree<T> {
     private final KDTree<T> kdTree;
     private final int dimensions;
     private final Function<T, double[]> keyExtractor;
 
-    public Kd3TreeAdapter(int dimensions, Function<T, double[]> keyExtractor) {
+    public KdTree3Adapter(int dimensions, Function<T, double[]> keyExtractor) {
         if (dimensions <= 0) {
             throw new IllegalArgumentException("Dimension must be positive");
         }

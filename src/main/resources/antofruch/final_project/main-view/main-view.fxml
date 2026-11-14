@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Accordion?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="antofruch.final_project.Contollers.MainView.MainViewController">
+    <top>
+        <Label fx:id="infoLabel" text="Main interface" BorderPane.alignment="CENTER" />
+    </top>
+   <left>
+      <Accordion BorderPane.alignment="CENTER">
+        <panes>
+          <TitledPane animated="false" text="Add Point">
+            <content>
+              <fx:include fx:id="addPointPane" source="add-point-pane.fxml" />
+            </content>
+          </TitledPane>
+          <TitledPane animated="false" text="Range Search">
+            <content>
+              <fx:include fx:id="rangeSearchPane" source="range-search-pane.fxml" />
+            </content>
+          </TitledPane>
+          <TitledPane animated="false" text="Find by Name">
+            <content>
+                <fx:include fx:id="findNamePane" source="find-name-pane.fxml" />
+            </content>
+          </TitledPane>
+            <TitledPane animated="false" text="Generate Data">
+               <content>
+                    <fx:include fx:id="generatePane" source="generate-pane.fxml" />
+               </content>
+            </TitledPane>
+            <TitledPane animated="false" text="CSV">
+               <content>
+                   <fx:include fx:id="csvPane" source="csv-pane.fxml" />
+               </content>
+            </TitledPane>
+        </panes>
+      </Accordion>
+   </left>
+   <center>
+      <ListView fx:id="resultListView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+   </center>
+</BorderPane>
