@@ -34,6 +34,11 @@ public class MainViewController {
     @FXML
     public void initialize() {
         Facade.getInstance();
+
+        if (resultListView != null) {
+            resultListView.setCellFactory(listView -> new POIListCell(this::openEditDialog));
+        }
+
         if (rangeSearchPaneController != null) {
             rangeSearchPaneController.setMainController(this);
         }
@@ -49,6 +54,10 @@ public class MainViewController {
         if(findNamePaneController != null) {
             findNamePaneController.setMainController(this);
         }
+    }
+
+    private void openEditDialog(POI poi) {
+        System.out.println("Édition du POI : " + poi);
     }
 
     public void initData(TreeType structure, Double minLat, Double maxLat, Double minLng, Double maxLng, Integer max_sub_depth) {
