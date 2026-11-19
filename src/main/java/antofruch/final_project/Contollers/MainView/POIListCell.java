@@ -55,7 +55,6 @@ public class POIListCell extends ListCell<POI> {
             setGraphic(null);
         } else {
             setText(null);
-            // Adaptez les getters selon votre classe POI (ex: getName(), getLat(), getLon())
             nameLabel.setText(poi.getName());
             coordsLabel.setText(String.format("%.5f, %.5f", poi.getLatitude(), poi.getLongitude()));
             setGraphic(root);
